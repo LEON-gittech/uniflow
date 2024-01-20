@@ -113,6 +113,8 @@ class TransformConfig:
             ],
         )
     )
+    split_func: str = "half_split"
+    merge_func: str = "half_merge"
 
 
 @dataclass
@@ -217,10 +219,32 @@ class TransformCopyConfig(TransformConfig):
 
     flow_name: str = "TransformCopyFlow"
     prompt_template: PromptTemplate = field(
-        default_factory=lambda: PromptTemplate(instruction="", few_shot_prompt=[])
+        default_factory=lambda: PromptTemplate(instruction="", few_shot_prompt=[]) #避免默认值共享
     )
     model_config: ModelConfig = field(default_factory=lambda: {})
 
+@dataclass
+class TransformExpandConfig(TransformConfig):
+    """Transform Expand Config Class."""
+
+    flow_name: str = "TransformExpandFlow"
+    prompt_template: PromptTemplate = field(
+        default_factory=lambda: PromptTemplate(instruction="", few_shot_prompt=[]) #避免默认值共享
+    )
+    model_config: ModelConfig = field(default_factory=lambda: {})
+    split_func: str = "half_split"
+
+@dataclass
+class ExpandReduceConfig(TransformConfig):
+    """Transform Expand Config Class."""
+
+    flow_name: str = "ExpandReduceFlow"
+    prompt_template: PromptTemplate = field(
+        default_factory=lambda: PromptTemplate(instruction="", few_shot_prompt=[]) #避免默认值共享
+    )
+    model_config: ModelConfig = field(default_factory=lambda: {})
+    split_func: str = "half_split"
+    merge_func: str = "half_merge"
 
 @dataclass
 class TransformForGenerationOpenAIGPT3p5Config(TransformConfig):

@@ -3,7 +3,7 @@
 from dataclasses import asdict
 from typing import Any, List, Mapping
 
-from uniflow.flow.config import ExtractConfig, RaterConfig, TransformConfig
+from uniflow.flow.config import ExpandReduceConfig, ExtractConfig, RaterConfig, TransformConfig
 from uniflow.flow.server import ExtractServer, RaterServer, TransformServer
 
 
@@ -50,7 +50,9 @@ class TransformClient:
             config (Config): Config for the flow
 
         """
+        print("config: ", config)
         self._config = config
+        print("transform client config: ", self._config)
         self._server = TransformServer(asdict(self._config))
 
     def run(self, input_list: List[Mapping[str, Any]]) -> List[Mapping[str, Any]]:
@@ -71,6 +73,10 @@ class TransformClient:
         """Run the flow asynchronously"""
         # TODO: Implement async client
         print("Client running async")
+
+def Client(flow_name: str) -> Any:
+    if flow_name == "expand_reduce_flow":
+        return TransformClient(ExpandReduceConfig(split_func="half_split", merge_func="half_merge"))
 
 
 class RaterClient:

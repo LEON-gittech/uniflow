@@ -125,16 +125,20 @@ class TransformServer:
         """
         # convert from dict to config for type checking
         self._config = TransformConfig(**config)
-
+        print("transform server config: ", self._config)
+        # 在这里实例化 Copy
         self._flow_cls = FlowFactory.get(self._config.flow_name, flow_type=TRANSFORM)
+        print("server flow_name: ",self._config.flow_name)
         self._num_thread = self._config.num_thread
-        self._flow_queue = Queue(self._num_thread)
+        self._flow_queue = Queue(self._num_thread) #Queue支持多线程
         for i in range(self._num_thread):
             with OpScope(name="thread_" + str(i)):
                 self._flow_queue.put(
                     self._flow_cls(
                         self._config.prompt_template,
                         self._config.model_config,
+                        self._config.split_func,
+                        self._config.merge_func
                     )
                 )
 
@@ -214,7 +218,7 @@ class TransformServer:
         Returns:
             List[Mapping[str, Any]]: List of outputs from the flow
         """
-        batch_data = self._divide_data_into_batches(input_list)
+        batch_data = self._divide_data_into_batches(input_list) #按 batch_size 进行划分
         with futures.ThreadPoolExecutor(max_workers=self._num_thread) as executor:
             output_futures = {
                 executor.submit(self._run_flow_wrapper, input_data, i): i

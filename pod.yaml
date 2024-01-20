@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment  # 创建控制器，通过控制器创建Pod
+metadata:
+  labels:
+    app: uniflow # 该控制器的label
+  name: uniflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uniflow # 选择哪个Pod
+  template:
+    metadata:
+      labels:
+        app: uniflow # 为这个Pod打上标签，方便控制器管理
+    spec:
+      containers:
+        - image: registry.example.com/project/production # 远程镜像名
+          imagePullPolicy: IfNotPresent
+          name: uniflow
+          command: ["/bin/bash"]
+          args: ["-c","python exam/server_client.py runserver 0.0.0.0:8080"]
